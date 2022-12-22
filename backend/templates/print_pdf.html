@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <style type="text/css">
+      @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@300&display=swap');
+      body {
+        font-family: 'Roboto Slab', serif;
+      }
+    </style>
+    <title>Список покупок для: {{ name }}</title>
+  </head>
+  <body> 
+      <h1>Сегодня нужно купить:</h1>
+      <hr>
+      {% for ingredient in ingredients %}
+        <p>- {{ ingredient.ingredient__name }} {{ ingredient.amount }} {{ ingredient.ingredient__measurement_unit }}</p>
+      {% endfor %}
+      <hr>
+      Foodgram {% now "Y" %}
+
+  </body>
+</html>
