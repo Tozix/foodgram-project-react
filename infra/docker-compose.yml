@@ -11,7 +11,7 @@ services:
     restart: always
 
   backend:
-    build: ../backend
+    image: tozix/foodgram-back:latest
     restart: always
     volumes:
       - static_value:/app/static/
@@ -21,9 +21,7 @@ services:
       - db
 
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    image: tozix/foodgram-front:latest
     volumes:
       - ../frontend/:/app/result_build/
   nginx:
