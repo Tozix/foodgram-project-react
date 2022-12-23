@@ -47,11 +47,11 @@ services:
     volumes:
       - ./certbot/www/:/var/www/certbot/:rw
       - ./certbot/conf/:/etc/letsencrypt/:rw
+    depends_on:
+      - nginx
 
 volumes:
   static_value:
   media_value:
   data_value:
   redoc:
-
-
