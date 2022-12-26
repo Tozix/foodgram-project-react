@@ -11,10 +11,20 @@
     <title>Список покупок для: {{ name }}</title>
   </head>
   <body> 
+      <hr>
       <h1>Сегодня нужно купить:</h1>
       <hr>
-      {% for ingredient in ingredients %}
-        <p>- {{ ingredient.ingredient__name }} {{ ingredient.amount }} {{ ingredient.ingredient__measurement_unit }}</p>
+
+      {% for item in shoping_cart %}
+        <h2>Рецпт: {{ item.recipe.name }} </h2>
+        <br>
+        <h3>Ингридиенты: </h3>
+        {% for ingredient in item.recipe.ingredient_list.all %}
+        <b>- {{ ingredient}}</b>
+        <br>
+        {% endfor %}
+        <br>
+     
       {% endfor %}
       <hr>
       Foodgram {% now "Y" %}

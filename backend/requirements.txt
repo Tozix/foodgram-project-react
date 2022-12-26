@@ -1,3 +1,4 @@
+accessify==0.3.1
 asgiref==3.5.2
 Django==3.2.16
 pytz==2022.6

@@ -1,3 +1,5 @@
+import logging
+
 from api.pagination import CustomPagination
 from api.serializers import CustomUserSerializer, SubscribeSerializer
 from django.shortcuts import get_object_or_404
@@ -8,6 +10,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from users.models import Subscribe, User
 
+logger = logging.getLogger(__name__)
+
 
 class CustomUserViewSet(UserViewSet):
     queryset = User.objects.all()
@@ -17,7 +21,7 @@ class CustomUserViewSet(UserViewSet):
     @action(
         detail=True,
         methods=['post', 'delete'],
-        permission_classes=[IsAuthenticated]
+        permission_classes=(IsAuthenticated,)
     )
     def subscribe(self, request, **kwargs):
         user = request.user
@@ -28,8 +32,10 @@ class CustomUserViewSet(UserViewSet):
             serializer = SubscribeSerializer(author,
                                              data=request.data,
                                              context={"request": request})
+
             serializer.is_valid(raise_exception=True)
             Subscribe.objects.create(user=user, author=author)
+            logger.debug(f'ДАТА {serializer.data}')
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         if request.method == 'DELETE':
@@ -39,9 +45,9 @@ class CustomUserViewSet(UserViewSet):
             subscription.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(
+    @ action(
         detail=False,
-        permission_classes=[IsAuthenticated]
+        permission_classes=(IsAuthenticated,)
     )
     def subscriptions(self, request):
         user = request.user

@@ -9,7 +9,9 @@ SECRET_KEY = os.getenv(
 
 DEBUG = os.getenv('DEBUG', True)
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(', ')
+#ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', default=["*"]).split(',')
+
+ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -111,6 +113,32 @@ DATABASES = {
         'PORT': int(os.getenv('DB_PORT', 5432))
     }
 }
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'console': {
+            # точный формат не важен, это минимальная информация
+            'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'console',
+        },
+    },
+    'loggers': {
+        # корневой логгер
+        '': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+        },
+    },
+}
+
 
 AUTH_USER_MODEL = 'users.User'
 
