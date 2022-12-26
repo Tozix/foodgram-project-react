@@ -244,6 +244,14 @@ class RecipeWriteSerializer(ModelSerializer):
     def update(self, instance, validated_data):
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
+        if not tags:
+            raise KeyError(
+                'Ключ tags отстуствует в словаре.'
+            )
+        if not ingredients:
+            raise KeyError(
+                'Ключ ingredients отстуствует в словаре.'
+            )
         instance = super().update(instance, validated_data)
         instance.tags.clear()
         instance.tags.set(tags)
