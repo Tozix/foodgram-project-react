@@ -7,13 +7,11 @@ from api.serializers import (IngredientSerializer, RecipeReadSerializer,
                              RecipeShortSerializer, RecipeWriteSerializer,
                              TagSerializer)
 from api.utils import render_to_pdf
-from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from recipes.filters import IngredientFilter, RecipeFilter
-from recipes.models import (Favourite, Ingredient, IngredientInRecipe, Recipe,
-                            ShoppingCart, Tag)
+from recipes.models import Favourite, Ingredient, Recipe, ShoppingCart, Tag
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated

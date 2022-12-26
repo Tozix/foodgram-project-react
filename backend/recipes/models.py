@@ -20,12 +20,16 @@ class Ingredient(models.Model):
 
 
 class Tag(models.Model):
-    name = models.CharField('Название', unique=True, max_length=200, validators=[
-        RegexValidator(
-            regex='^[-a-zA-Z0-9_а-яёА-Я]+$',
-            message='Недопустимые символы в имени!'
-        )
-    ])
+    name = models.CharField(
+        'Название',
+        unique=True,
+        max_length=200,
+        validators=[
+            RegexValidator(
+                regex='^[-a-zA-Z0-9_а-яёА-Я]+$',
+                message='Недопустимые символы в имени!'
+            )
+        ])
     color = models.CharField(
         'Цветовой HEX-код',
         unique=True,
