@@ -11,7 +11,7 @@ services:
     restart: always
 
   backend:
-    build: ../backend
+    image: tozix/foodgram-back:latest
     restart: always
     volumes:
       - static_value:/app/static/
@@ -42,6 +42,14 @@ services:
     depends_on:
       - backend
     restart: always
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./certbot/www/:/var/www/certbot/:rw
+      - ./certbot/conf/:/etc/letsencrypt/:rw
+    depends_on:
+      - nginx
 
 volumes:
   static_value:
