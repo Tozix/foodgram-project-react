@@ -243,8 +243,8 @@ class RecipeWriteSerializer(ModelSerializer):
         ingredients = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
-        self.___create_ingredients_amounts(recipe=recipe,
-                                           ingredients=ingredients)
+        self.__create_ingredients_amounts(recipe=recipe,
+                                          ingredients=ingredients)
         return recipe
 
     @ transaction.atomic
