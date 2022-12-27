@@ -51,7 +51,7 @@ class SubscribeSerializer(CustomUserSerializer):
     def validate(self, data):
         author = self.instance
         user = self.context.get('request').user
-        if author.subscribing.exists():
+        if author.subscribing.filter(user=user).exists():
             logger.debug('Вы уже подписаны на этого пользователя!')
             raise ValidationError(
                 detail='Вы уже подписаны на этого пользователя!',
