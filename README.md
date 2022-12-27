@@ -186,6 +186,10 @@ server {
 }
 
 ```
+## Админ для Ревью
+- email: admin@test.net
+- Password: RfdS2sf5yhga
+
 
 ## Импорт/Экспорт данных
 Импорт/либо экспорт данных можно произвести через админ панель сайта по [адресу](https://foodgram.boostnet.ru/admin/)
