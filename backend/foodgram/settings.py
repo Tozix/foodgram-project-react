@@ -118,7 +118,6 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'console': {
-            # точный формат не важен, это минимальная информация
             'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
         },
     },
@@ -129,7 +128,6 @@ LOGGING = {
         },
     },
     'loggers': {
-        # корневой логгер
         '': {
             'level': 'DEBUG',
             'handlers': ['console'],

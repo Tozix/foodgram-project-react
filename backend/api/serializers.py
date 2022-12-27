@@ -1,6 +1,5 @@
 import logging
 
-from accessify import private
 from django.db import transaction
 from django.db.models import F
 from djoser.serializers import UserCreateSerializer, UserSerializer
@@ -153,8 +152,7 @@ class RecipeWriteSerializer(ModelSerializer):
     ingredients = IngredientInRecipeWriteSerializer(many=True)
     image = Base64ImageField()
 
-    def validate_ingredients(self, value):
-        ingredients = value
+    def validate_ingredients(self, ingredients):
         if not ingredients:
             raise ValidationError({
                 'ingredients': 'Нужен хотя бы один ингредиент!'
@@ -184,26 +182,40 @@ class RecipeWriteSerializer(ModelSerializer):
                     'amount': 'Количество ингредиента должно быть больше 0!'
                 })
             ingredients_list.append(ingredient_id)
-        return value
+        return ingredients
 
-    def validate_tags(self, value):
-        tags = value
+    def validate_tags(self, tags):
         if not tags:
             raise ValidationError({
                 'tags': 'Нужно выбрать хотя бы один тег!'
             })
         tags_list = []
         for tag in tags:
+            if not Tag.objects.filter(name=tag).exists():
+                raise ValidationError(
+                    f"'tags': Ингредиента {tag} нет в базе данных."
+                )
             if tag in tags_list:
                 raise ValidationError({
                     'tags': 'Теги должны быть уникальными!'
                 })
             tags_list.append(tag)
-        return value
+        return tags
 
-    @private
+    def validate(self, data):
+        if not data.get('tags'):
+            raise ValidationError({
+                'tags': 'Не указаны теги'
+            })
+        if not data.get('ingredients'):
+            raise ValidationError({
+                'ingredients': 'Ингредиенты не указаны.'
+            })
+        return data
+
+    @staticmethod
     @transaction.atomic
-    def create_ingredients_amounts(self, ingredients, recipe):
+    def __create_ingredients_amounts(ingredients, recipe):
         for ingredient in ingredients:
             ingredient_id = ingredient.get('id')
             ingredient_amount = ingredient.get('amount')
@@ -226,40 +238,21 @@ class RecipeWriteSerializer(ModelSerializer):
     def create(self, validated_data):
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
-        if not tags:
-            raise KeyError(
-                'Ключ tags отстуствует в словаре.'
-            )
-        if not ingredients:
-            raise KeyError(
-                'Ключ ingredients отстуствует в словаре.'
-            )
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
-        self.create_ingredients_amounts(recipe=recipe,
-                                        ingredients=ingredients)
+        self.___create_ingredients_amounts(recipe=recipe,
+                                           ingredients=ingredients)
         return recipe
 
     @transaction.atomic
     def update(self, instance, validated_data):
-        tags = validated_data.pop('tags')
-        ingredients = validated_data.pop('ingredients')
-        if not tags:
-            raise KeyError(
-                'Ключ tags отстуствует в словаре.'
-            )
-        if not ingredients:
-            raise KeyError(
-                'Ключ ingredients отстуствует в словаре.'
-            )
-        instance = super().update(instance, validated_data)
-        instance.tags.clear()
+        ingredients = validated_data.pop("ingredients")
+        tags = validated_data.pop("tags")
+        IngredientInRecipe.objects.filter(recipe=instance).delete()
+        self.__create_ingredients_amounts(recipe=instance,
+                                          ingredients=ingredients)
         instance.tags.set(tags)
-        instance.ingredients.clear()
-        self.create_ingredients_amounts(recipe=instance,
-                                        ingredients=ingredients)
-        instance.save()
-        return instance
+        return super().update(instance, validated_data)
 
     def to_representation(self, instance):
         request = self.context.get('request')
