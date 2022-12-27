@@ -29,7 +29,8 @@ class CustomUserSerializer(UserSerializer):
 
     def get_is_subscribed(self, obj):
         user = self.context.get('request').user
-        return user.is_authenticated and obj.subscribing.exists()
+        return (user.is_authenticated
+                and obj.subscribing.filter(user=user).exists())
 
     class Meta:
         model = User
@@ -115,11 +116,13 @@ class RecipeReadSerializer(ModelSerializer):
 
     def get_is_favorited(self, obj):
         user = self.context.get('request').user
-        return user.is_authenticated and obj.favorites.exists()
+        return (user.is_authenticated
+                and obj.favorites.filter(user=user).exists())
 
     def get_is_in_shopping_cart(self, obj):
         user = self.context.get('request').user
-        return user.is_authenticated and obj.shopping_cart.exists()
+        return (user.is_authenticated
+                and obj.shopping_cart.filter(user=user).exists())
 
     class Meta:
         model = Recipe
@@ -213,8 +216,8 @@ class RecipeWriteSerializer(ModelSerializer):
             })
         return data
 
-    @staticmethod
-    @transaction.atomic
+    @ staticmethod
+    @ transaction.atomic
     def __create_ingredients_amounts(ingredients, recipe):
         for ingredient in ingredients:
             ingredient_id = ingredient.get('id')
@@ -234,7 +237,7 @@ class RecipeWriteSerializer(ModelSerializer):
                     amount=ingredient.get('amount'),)
             ])
 
-    @transaction.atomic
+    @ transaction.atomic
     def create(self, validated_data):
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
@@ -244,7 +247,7 @@ class RecipeWriteSerializer(ModelSerializer):
                                            ingredients=ingredients)
         return recipe
 
-    @transaction.atomic
+    @ transaction.atomic
     def update(self, instance, validated_data):
         ingredients = validated_data.pop("ingredients")
         tags = validated_data.pop("tags")
